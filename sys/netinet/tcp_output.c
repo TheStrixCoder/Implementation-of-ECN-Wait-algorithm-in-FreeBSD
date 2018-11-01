@@ -332,7 +332,10 @@ after_sack_rexmit:
 	if (tp->t_flags & TF_NEEDFIN)
 		flags |= TH_FIN;
 	if (tp->t_flags & TF_NEEDSYN)
+	{
 		flags |= TH_SYN;
+		flags |= TH_ECE|TH_CWR;		/* Enabling ECN bits alongs with SYN flag */
+	}
 
 	SOCKBUF_LOCK(&so->so_snd);
 	/*
