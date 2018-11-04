@@ -1101,34 +1101,19 @@ send:
 	 * resend those bits a number of times as per
 	 * RFC 3168.
 	 */
-	/*
-	 * If we are in the listening phase enabled the flags and 
-	 * enabled ECN capable transmission in IP header
-	 */
-	if (tp->t_state == TCPS_LISTEN) {
-			flags |= TH_ECE|TH_CWR;
 
-			ip->ip_tos |= IPTOS_ECN_ECT0;
-
-			TCPSTAT_INC(tcps_ecn_ect0);
-
-		/*
-		 * Reply with proper ECN notifications.
-		 */
-		if (tp->t_flags & TF_ECN_SND_CWR) {
-			flags |= TH_CWR;
-			tp->t_flags &= ~TF_ECN_SND_CWR;
-		} 
-		if (tp->t_flags & TF_ECN_SND_ECE)
-			flags |= TH_ECE;
-	}
-
-	if (tp->t_state == TCPS_SYN_SENT && V_tcp_do_ecn == 1) {
+	if (tp->t_state == TCPS_SYN_SENT && V_tcp_do_ecn == 1) {	/* If SYN is received and ECN is enabled in conf */
 		if (tp->t_rxtshift >= 1) {
-			if (tp->t_rxtshift <= V_tcp_ecn_maxretries)
-				flags |= TH_ECE|TH_CWR;
-		} else
-			flags |= TH_ECE|TH_CWR;
+			if (tp->t_rxtshift <= V_tcp_ecn_maxretries) {
+				flags |= TH_ECE;			/* Reply with ECE=1 and CWR=0 in TCP header */
+				ip->ip_tos |= IPTOS_ECN_ECT0;		/* Reply with ECT0 in IP Header */
+				TCPSTAT_INC(tcps_ecn_ect0);
+			}
+		} else {
+			flags |= TH_ECE;		/* Reply with ECE=1 and CWR=0 in TCP header */
+			ip->ip_tos |= IPTOS_ECN_ECT0;   /* Enable ECT0 in IP header */
+			TCPSTAT_INC(tcps_ecn_ect0);     /* Change the stat to ECT0 */
+		}
 	}
 	
 	if (tp->t_state == TCPS_ESTABLISHED &&
