@@ -1551,7 +1551,11 @@ skip_alloc:
 	if (ltflags & TF_NOOPT)
 		sc->sc_flags |= SCF_NOOPT;
 	if ((th->th_flags & (TH_ECE|TH_CWR)) && V_tcp_do_ecn)
+	{
 		sc->sc_flags |= SCF_ECN;
+		syslog(LOG_DEBUG, "SCF_ECN flag is enabled in tcp_syncache");      /* Logging for ECN+ */
+	}
+	
 
 	if (V_tcp_syncookies)
 		sc->sc_iss = syncookie_generate(sch, sc);
