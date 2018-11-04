@@ -1101,6 +1101,19 @@ send:
 	 * resend those bits a number of times as per
 	 * RFC 3168.
 	 */
+	
+	/* Debug functions */
+	if (tp->t_state == TCPS_SYN_SENT)
+		syslog(LOG_DEBUG, "Current TCPS_SYN_SENT state in tcp_output.c");
+	else if (tp->t_state == TCPS_SYN_RECIEVED)
+		syslog(LOG_DEBUG, "Current TCPS_SYN_RECIEVED state in tcp_output.c");
+	else if (tp->t_state == TCPS_ESTABLISHED)
+		syslog(LOG_DEBUG, "Current TCPS_SYN_RECIEVED state in tcp_output.c");
+	else
+		syslog(LOG_DEBUG, "Current Unknown state in tcp_output.c");
+	
+	if (tp->t_flags & TF_ECN_PERMIT)
+		syslog(LOG_DEBUG, "TF_ECN_PERMIT is enabled in tcp_output.c 1114");
 	if (tp->t_state == TCPS_SYN_SENT && V_tcp_do_ecn == 1) {
 		if (tp->t_rxtshift >= 1) {
 			if (tp->t_rxtshift <= V_tcp_ecn_maxretries)
