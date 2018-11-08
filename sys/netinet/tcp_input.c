@@ -1601,19 +1601,22 @@ tcp_do_segment(struct mbuf *m, struct tcphdr *th, struct socket *so,
 		if (thflags & TH_CWR)
 			tp->t_flags &= ~TF_ECN_SND_ECE;
 		switch (iptos & IPTOS_ECN_MASK) {
-		case IPTOS_ECN_CE: //Congestion Experienced // Add wait for 1 RTT and then uncomment
+		case IPTOS_ECN_CE: //Congestion Experienced Detected in IP header -> Update TCP ECE in queue 
+				// Add wait for 1 RTT
+				// wait(tp->t_srtt) or wait(TCPCTL_RTTDFLT)
 				tp->t_flags |= TF_ECN_SND_ECE;
 				TCPSTAT_INC(tcps_ecn_ce);
 				break;
-		case IPTOS_ECN_ECT0:
+	 /* The below code is redundent */
+		case IPTOS_ECN_ECT0:// If ECN-capable transport (0) in IP set  ECN Capable Transport in TCP header
 			TCPSTAT_INC(tcps_ecn_ect0);
 			break;
 		case IPTOS_ECN_ECT1:
+			// If ECN-capable transport (0) in IP set  ECN Capable Transport in TCP header
 			TCPSTAT_INC(tcps_ecn_ect1);
 			break;		
 
 		}
-// 		IPTOS_ECN_CE
 	}		
 
 
