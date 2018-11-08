@@ -1595,6 +1595,14 @@ tcp_do_segment(struct mbuf *m, struct tcphdr *th, struct socket *so,
 	/*
 	 * TCP ECN processing.
 	 */
+		
+	/* We have to insert code here(rough commit)*/
+	if ((tp->t_state == TCPS_SYN_SENT) && (thflags & TH_ACK) && TF_ECN_PERMIT)
+		
+	{
+	/* Copy below code here.*/	
+	}
+
 	if (tp->t_flags & TF_ECN_PERMIT) {
 		if (thflags & TH_CWR)
 			tp->t_flags &= ~TF_ECN_SND_ECE;
