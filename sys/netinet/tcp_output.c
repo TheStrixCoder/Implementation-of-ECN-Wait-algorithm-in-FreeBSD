@@ -1095,34 +1095,21 @@ send:
 	if (flags & TH_FIN && tp->t_flags & TF_SENTFIN &&
 	    tp->snd_nxt == tp->snd_max)
 		tp->snd_nxt--;
+	
+	/* If client has already sent a SYN and the client has to send SYN-ACK in reply while it is in LISTEN state */
+	if (tp->t_state == TCPS_SYN_RECEIVED && V_tcp_do_ecn == 1) {   
+		flags |= TH_ECE;				/* Send ECE=1 and CWR=0 in TCP header with SYN-ACK */
+ 		ip->ip_tos |= IPTOS_ECN_ECT0;			/* Enable ECT0 in IP header */
+ 		TCPSTAT_INC(tcps_ecn_ect0);			/* Update the TCPSTAT */
+	}
+	
 	/*
 	 * If we are starting a connection, send ECN setup
 	 * SYN packet. If we are on a retransmit, we may
 	 * resend those bits a number of times as per
 	 * RFC 3168.
 	 */
-	/*
-	 * If we are in the listening phase enabled the flags and 
-	 * enabled ECN capable transmission in IP header
-	 */
-	if (tp->t_state == TCPS_LISTEN) {
-			flags |= TH_ECE|TH_CWR;
-
-			ip->ip_tos |= IPTOS_ECN_ECT0;
-
-			TCPSTAT_INC(tcps_ecn_ect0);
-
-		/*
-		 * Reply with proper ECN notifications.
-		 */
-		if (tp->t_flags & TF_ECN_SND_CWR) {
-			flags |= TH_CWR;
-			tp->t_flags &= ~TF_ECN_SND_CWR;
-		} 
-		if (tp->t_flags & TF_ECN_SND_ECE)
-			flags |= TH_ECE;
-	}
-
+	
 	if (tp->t_state == TCPS_SYN_SENT && V_tcp_do_ecn == 1) {
 		if (tp->t_rxtshift >= 1) {
 			if (tp->t_rxtshift <= V_tcp_ecn_maxretries)
