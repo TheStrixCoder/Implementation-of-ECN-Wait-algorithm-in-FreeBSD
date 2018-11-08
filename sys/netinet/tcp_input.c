@@ -1572,6 +1572,8 @@ tcp_do_segment(struct mbuf *m, struct tcphdr *th, struct socket *so,
 	 * If a segment with the ACK-bit set arrives in the SYN-SENT state
 	 * check SEQ.ACK first.
 	 */
+		
+	
 	if ((tp->t_state == TCPS_SYN_SENT) && (thflags & TH_ACK) &&
 	    (SEQ_LEQ(th->th_ack, tp->iss) || SEQ_GT(th->th_ack, tp->snd_max))) {
 		rstreason = BANDLIM_UNLIMITED;
@@ -1595,6 +1597,27 @@ tcp_do_segment(struct mbuf *m, struct tcphdr *th, struct socket *so,
 	/*
 	 * TCP ECN processing.
 	 */
+	if ((tp->t_state == TCPS_SYN_SENT) && (thflags & TH_ACK) &&(tp->t_flags & TF_ECN_PERMIT)){
+		if (thflags & TH_CWR)
+			tp->t_flags &= ~TF_ECN_SND_ECE;
+		switch (iptos & IPTOS_ECN_MASK) {
+		case IPTOS_ECN_CE: //Congestion Experienced // Add wait for 1 RTT and then uncomment
+				tp->t_flags |= TF_ECN_SND_ECE;
+				TCPSTAT_INC(tcps_ecn_ce);
+				break;
+		case IPTOS_ECN_ECT0:
+			TCPSTAT_INC(tcps_ecn_ect0);
+			break;
+		case IPTOS_ECN_ECT1:
+			TCPSTAT_INC(tcps_ecn_ect1);
+			break;		
+
+		}
+// 		IPTOS_ECN_CE
+	}		
+
+
+	
 	if (tp->t_flags & TF_ECN_PERMIT) {
 		if (thflags & TH_CWR)
 			tp->t_flags &= ~TF_ECN_SND_ECE;
