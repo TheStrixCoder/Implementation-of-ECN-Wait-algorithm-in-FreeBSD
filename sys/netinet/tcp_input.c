@@ -1597,11 +1597,8 @@ tcp_do_segment(struct mbuf *m, struct tcphdr *th, struct socket *so,
 	 */
 		
 	/* We have to insert code here(rough commit)*/
-	if ((tp->t_state == TCPS_SYN_SENT) && (thflags & TH_ACK) && TF_ECN_PERMIT)
-		
-	{
-	/* Copy below code here.*/	
-	}
+	int rtt;
+	struct hc_metrics_lite metrics;
 
 	if (tp->t_flags & TF_ECN_PERMIT) {
 		if (thflags & TH_CWR)
@@ -1618,12 +1615,24 @@ tcp_do_segment(struct mbuf *m, struct tcphdr *th, struct socket *so,
 			TCPSTAT_INC(tcps_ecn_ect1);
 			break;
 		}
-
+	
+		
 		/* Process a packet differently from RFC3168. */
 		cc_ecnpkt_handler(tp, th, iptos);
 
 		/* Congestion experienced. */
 		if (thflags & TH_ECE) {
+			
+			if ((tp->t_state == TCPS_SYN_SENT) && (thflags & TH_ACK) && (tp->t_srtt!=0)){
+				rtt = tp->t_srtt;
+				DELAY_ACK(tp,rtt);
+				
+			}
+			else if((tp->t_state == TCPS_SYN_SENT) && (thflags & TH_ACK) && (tp->t_srtt==0)){
+				rtt = metrics.rmx_rtt;
+				DELAY_ACK(tp,rtt);
+
+			}
 			cc_cong_signal(tp, th, CC_ECN);
 		}
 	}
