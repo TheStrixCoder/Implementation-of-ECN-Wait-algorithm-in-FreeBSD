@@ -1623,12 +1623,12 @@ tcp_do_segment(struct mbuf *m, struct tcphdr *th, struct socket *so,
 		/* Congestion experienced. */
 		if (thflags & TH_ECE) {
 			
-			if ((tp->t_state == TCPS_SYN_SENT) && (thflags & TH_ACK) && (tp->t_srtt!=0)){
+			if ((tp->t_state == TCPS_SYN_SENT) && (thflags & TH_ACK) && (tp->t_srtt!=0) && V_tcp_do_ecn==3){
 				rtt = tp->t_srtt;
 				DELAY_ACK(tp,rtt);
 				
 			}
-			else if((tp->t_state == TCPS_SYN_SENT) && (thflags & TH_ACK) && (tp->t_srtt==0)){
+			else if((tp->t_state == TCPS_SYN_SENT) && (thflags & TH_ACK) && (tp->t_srtt==0) && V_tcp_do_ecn==3){
 				rtt = metrics.rmx_rtt;
 				DELAY_ACK(tp,rtt);
 
