@@ -1629,15 +1629,15 @@ tcp_do_segment(struct mbuf *m, struct tcphdr *th, struct socket *so,
 			 * for 1 Round Trip Time and reduce the data window to 1.
 			 */
 			if ((tp->t_state == TCPS_SYN_SENT) && (thflags & TH_ACK) && (tp->t_srtt!=0) && V_tcp_do_ecn==3){
-				rtt = tp->t_srtt;
-				DELAY_ACK(tp,rtt);
-				 tp->snd_ssthresh=1;
+				 rtt = tp->t_srtt;
+			         tcp_timer_activate(tp, TT_DELACK, rtt);
+				 tp->snd_cwnd=1;
 				
 			}
 			else if((tp->t_state == TCPS_SYN_SENT) && (thflags & TH_ACK) && (tp->t_srtt==0) && V_tcp_do_ecn==3){
 				rtt = metrics.rmx_rtt;
-				DELAY_ACK(tp,rtt);
-				tp->snd_ssthresh=1;
+			         tcp_timer_activate(tp, TT_DELACK, rtt);
+				tp->snd_cwnd=1;
 
 
 			}
