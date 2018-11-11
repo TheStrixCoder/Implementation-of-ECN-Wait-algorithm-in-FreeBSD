@@ -762,7 +762,6 @@ VNET_DECLARE(int, tcp_delack_enabled);
 VNET_DECLARE(int, tcp_do_autorcvbuf);
 VNET_DECLARE(int, tcp_do_autosndbuf);
 VNET_DECLARE(int, tcp_do_ecn);
-VNET_DECLARE(int, tcp_do_ecn_wait);
 VNET_DECLARE(int, tcp_do_rfc1323);
 VNET_DECLARE(int, tcp_do_rfc3042);
 VNET_DECLARE(int, tcp_do_rfc3390);
@@ -798,7 +797,6 @@ VNET_DECLARE(struct inpcbinfo, tcbinfo);
 #define	V_tcp_do_autorcvbuf		VNET(tcp_do_autorcvbuf)
 #define	V_tcp_do_autosndbuf		VNET(tcp_do_autosndbuf)
 #define	V_tcp_do_ecn			VNET(tcp_do_ecn)
-#define	V_tcp_do_ecn_wait		VNET(tcp_do_ecn_wait)
 #define	V_tcp_do_rfc1323		VNET(tcp_do_rfc1323)
 #define	V_tcp_do_rfc3042		VNET(tcp_do_rfc3042)
 #define	V_tcp_do_rfc3390		VNET(tcp_do_rfc3390)
