@@ -187,11 +187,6 @@ SYSCTL_INT(_net_inet_tcp_ecn, OID_AUTO, enable, CTLFLAG_VNET | CTLFLAG_RW,
     &VNET_NAME(tcp_do_ecn), 0,
     "TCP ECN support");
 
-VNET_DEFINE(int, tcp_do_ecn_wait) = 0;
-SYSCTL_INT(_net_inet_tcp_ecn, OID_AUTO, enable_wait, CTLFLAG_VNET | CTLFLAG_RW,
-    &VNET_NAME(tcp_do_ecn_wait), 0,
-    "TCP ECN+ Wait support");
-
 VNET_DEFINE(int, tcp_ecn_maxretries) = 1;
 SYSCTL_INT(_net_inet_tcp_ecn, OID_AUTO, maxretries, CTLFLAG_VNET | CTLFLAG_RW,
     &VNET_NAME(tcp_ecn_maxretries), 0,
